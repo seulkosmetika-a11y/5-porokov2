@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест: выраженность пороков команды</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F6F3EC;
+    --paper: #FFFFFF;
+    --ink: #22283A;
+    --ink-soft: #5B6178;
+    --line: #DEDACB;
+    --accent: #B9862E;
+    --low: #4F7A5B;
+    --low-bg: #E7EFE7;
+    --mid: #B9862E;
+    --mid-bg: #F5EAD3;
+    --high: #A24438;
+    --high-bg: #F3E1DC;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  #app{
+    max-width:640px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+    min-height:100vh;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:32px 28px;
+  }
+  .pyramid{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    margin:28px 0 8px;
+  }
+  .pyr-layer{
+    height:30px;
+    border-radius:1px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    color:var(--paper);
+    background:#C9C2AC;
+    transition:background 0.4s ease;
+    width:100%;
+    text-align:center;
+    padding:0 8px;
+  }
+  .pyr-layer.active{ background:var(--ink); }
+  .pyr-w-1{width:100%;} .pyr-w-2{width:82%;} .pyr-w-3{width:64%;} .pyr-w-4{width:46%;} .pyr-w-5{width:28%;}
+
+  .lede{ font-size:16px; line-height:1.6; color:var(--ink-soft); margin:14px 0 26px;}
+  label{ display:block; font-size:13px; font-weight:600; color:var(--ink-soft); margin:18px 0 6px;}
+  input[type=text]{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    font-family:inherit;
+    font-size:15px;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  input[type=text]:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  button{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    cursor:pointer;
+    border:none;
+    border-radius:2px;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:var(--paper);
+    padding:13px 26px;
+    margin-top:26px;
+    width:100%;
+  }
+  .btn-primary:hover{ background:#333a52; }
+  .btn-primary:disabled{ background:#B5B9C6; cursor:not-allowed; }
+  .btn-secondary{
+    background:transparent;
+    color:var(--ink-soft);
+    padding:10px 18px;
+    border:1px solid var(--line);
+  }
+
+  .progress-track{
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    margin:0 0 30px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--accent);
+    transition:width 0.3s ease;
+  }
+  .q-meta{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    margin-bottom:12px;
+  }
+  .q-text{
+    font-family:'Fraunces', serif;
+    font-size:21px;
+    font-weight:500;
+    line-height:1.35;
+    margin-bottom:24px;
+  }
+  .choice-opt{
+    padding:15px 16px;
+    border:1px solid var(--line);
+    border-radius:2px;
+    cursor:pointer;
+    margin-bottom:10px;
+    font-size:14.5px;
+    line-height:1.45;
+    background:var(--bg);
+    transition:all 0.15s ease;
+  }
+  .choice-opt:hover{ border-color:var(--accent); }
+  .choice-opt.selected{ background:var(--ink); border-color:var(--ink); color:var(--paper); }
+  .nav-row{ display:flex; gap:10px; margin-top:8px; }
+  .nav-row .btn-primary{ margin-top:0; }
+
+  .vice-result{
+    border:1px solid var(--line);
+    border-radius:2px;
+    padding:18px 20px;
+    margin-bottom:12px;
+  }
+  .vice-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;}
+  .vice-name{ font-family:'Fraunces', serif; font-size:16.5px; font-weight:600;}
+  .vice-tag{
+    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    padding:3px 9px; border-radius:20px; white-space:nowrap;
+  }
+  .tag-low{ background:var(--low-bg); color:var(--low); }
+  .tag-mid{ background:var(--mid-bg); color:var(--mid); }
+  .tag-high{ background:var(--high-bg); color:var(--high); }
+  .vice-bar-track{ height:6px; background:var(--bg); border-radius:3px; margin:10px 0; overflow:hidden;}
+  .vice-bar-fill{ height:100%; border-radius:3px; }
+  .vice-text{ font-size:13.5px; color:var(--ink-soft); line-height:1.55; margin-top:8px;}
+  .vice-count{ font-size:12px; color:var(--ink-soft); }
+  .top-banner{
+    background:var(--ink); color:var(--paper); padding:22px 24px; border-radius:2px; margin-bottom:22px;
+  }
+  .top-banner .eyebrow{ color:#C9C2AC; }
+  .top-banner h2{ font-size:21px; margin:4px 0 8px; }
+  .top-banner p{ font-size:14px; line-height:1.55; color:#D8D5E2; margin:0;}
+  .status-note{
+    font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:18px; line-height:1.5;
+  }
+  .status-note.ok{ color:var(--low); }
+  .status-note.err{ color:var(--high); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ CONFIG ============ */
+// Вставьте сюда URL вашего развёрнутого Google Apps Script (см. файл-инструкцию рядом)
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycjPU8VVM5y0Sf6nHpmjDJSNQI2DwTM3B0N5Zu9GpLfXDimJa8nzVrTcM_Yi47OLho/exec";
+
+/* ============ DATA ============ */
+const VICE_ORDER = ['trust','conflict','commitment','accountability','results'];
+const VICE_LABEL = {
+  trust: 'Недоверие',
+  conflict: 'Страх конфликта',
+  commitment: 'Отсутствие приверженности',
+  accountability: 'Уклонение от ответственности',
+  results: 'Безразличие к результату'
+};
+
+// Каждый вопрос — рабочая ситуация. У каждого варианта ответа есть "vice" —
+// какой порок он отражает. Респондент не видит эту разметку, варианты
+// перемешаны и звучат как обычные, социально приемлемые реакции.
+const QUESTIONS = [
+  {
+    id: 'q1',
+    text: 'Тебе на новом проекте досталась задача не совсем по профилю. Что вероятнее сделаешь?',
+    options: [
+      {vice:'trust', text:'Возьмусь, но не скажу, что не уверен — разберусь сам, потом'},
+      {vice:'conflict', text:'Соглашусь, хотя внутри думаю, что задача не моя — не хочу спорить с распределением'},
+      {vice:'commitment', text:'Молча приму, но не буду активно включаться, в надежде, что задачу переиграют'},
+      {vice:'accountability', text:'Возьмусь, но заранее решу для себя: если не выйдет — виновата будет постановка задачи'},
+      {vice:'results', text:'Посмотрю, что выгоднее лично мне показать в этом проекте, и подстрою задачу под это'},
+      {vice:'healthy', text:'Скажу, что это не совсем моя область, но возьмусь и буду уточнять по ходу, если что-то непонятно'},
+    ]
+  },
+  {
+    id: 'q2',
+    text: 'На совещании обсуждают решение, с которым ты внутренне не согласен. Что вероятнее сделаешь?',
+    options: [
+      {vice:'trust', text:'Промолчу — не хочу показывать, что чего-то не понимаю в вопросе'},
+      {vice:'conflict', text:'Кивну и не буду спорить — не вижу смысла портить атмосферу ради одного мнения'},
+      {vice:'commitment', text:'Скажу «окей», но по факту буду делать по-своему'},
+      {vice:'accountability', text:'Соглашусь публично, а там посмотрим — если решение окажется неудачным, пусть это заметит кто-то другой'},
+      {vice:'results', text:'Соглашусь, если это не влияет на мои задачи — не хочу тратить время на чужой вопрос'},
+      {vice:'healthy', text:'Скажу прямо, что у меня другое мнение, и объясню почему'},
+    ]
+  },
+  {
+    id: 'q3',
+    text: 'Дедлайн по общей задаче горит, и часть работы явно отстаёт не по твоей вине. Что сделаешь?',
+    options: [
+      {vice:'trust', text:'Буду тянуть в одиночку, лишь бы не выглядеть так, будто не справляюсь'},
+      {vice:'conflict', text:'Не буду поднимать тему отставания вслух — рискну, что само рассосётся'},
+      {vice:'commitment', text:'Сделаю свою часть и не более — раз план и так уже трещит по швам'},
+      {vice:'accountability', text:'Отмечу проблему руководителю, но не буду разговаривать напрямую с тем, кто отстаёт'},
+      {vice:'results', text:'Сосредоточусь на том, чтобы моя часть точно была готова — остальное не моя зона'},
+      {vice:'healthy', text:'Прямо скажу, что часть отстаёт, и предложу вместе посмотреть, как это решить'},
+    ]
+  },
+  {
+    id: 'q4',
+    text: 'Коллега прислал результат работы с недочётами, которые повлияют на общий проект. Как поступишь?',
+    options: [
+      {vice:'trust', text:'Промолчу, чтобы не показаться слишком придирчивым'},
+      {vice:'conflict', text:'Напишу мягкий комментарий в переписке, но не буду поднимать это при всех'},
+      {vice:'commitment', text:'Ничего не скажу — раз он вроде как ответственный, пусть сам разбирается'},
+      {vice:'accountability', text:'Доделаю или подправлю сам, чтобы не создавать неловкий разговор'},
+      {vice:'results', text:'Отмечу для себя, что моя часть точно в порядке, а до остального мне не особо есть дело'},
+      {vice:'healthy', text:'Скажу коллеге напрямую, что заметил недочёты, и предложу вместе поправить'},
+    ]
+  },
+  {
+    id: 'q5',
+    text: 'Нужно защитить перед командой непопулярное мнение. Что вероятнее произойдёт?',
+    options: [
+      {vice:'trust', text:'Смягчу формулировку так, чтобы не выглядело, будто я в чём-то не уверен'},
+      {vice:'conflict', text:'Скорее промолчу или скажу что-то нейтральное — не хочу быть тем, кто спорит'},
+      {vice:'commitment', text:'Выскажусь, но особо не буду настаивать — пусть решают, как хотят'},
+      {vice:'accountability', text:'Выскажусь, но потом, если что-то пойдёт не так, замечу, что предупреждал'},
+      {vice:'results', text:'Сначала оценю, насколько это вообще влияет на мои задачи, прежде чем ввязываться'},
+      {vice:'healthy', text:'Выскажу мнение и постараюсь аргументированно его отстоять, даже если оно непопулярно'},
+    ]
+  },
+  {
+    id: 'q6',
+    text: 'Руководитель попросил дать честную обратную связь коллеге, чья работа тормозит проект. Твоя реакция?',
+    options: [
+      {vice:'trust', text:'Дам обратную связь очень осторожно, чтобы не показать, что сам сомневаюсь в своей оценке'},
+      {vice:'conflict', text:'Постараюсь сформулировать всё максимально мягко, лишь бы не создать неловкость'},
+      {vice:'commitment', text:'Дам обратную связь один раз и не буду возвращаться к теме, даже если ничего не изменится'},
+      {vice:'accountability', text:'Предпочту, чтобы это сказал руководитель — не моя роль указывать коллеге'},
+      {vice:'results', text:'Скажу, только если это не отразится на моих личных отношениях с этим человеком'},
+      {vice:'healthy', text:'Дам прямую и конкретную обратную связь, объясню, как это влияет на общий результат'},
+    ]
+  },
+  {
+    id: 'q7',
+    text: 'Итоги квартала: команда не достигла цели, хотя лично твои задачи выполнены. Как ты это воспринимаешь?',
+    options: [
+      {vice:'trust', text:'Важно, чтобы никто не подумал, что именно я недоработал'},
+      {vice:'conflict', text:'Не хочу обсуждать, кто где недотянул — просто пройдём мимо этой темы'},
+      {vice:'commitment', text:'Ну, значит, цель изначально была нереалистичной — я по-своему был против неё'},
+      {vice:'accountability', text:'Главное, что моя часть в порядке — до общего результата мне сложно достучаться'},
+      {vice:'results', text:'Мой личный результат хороший, и это то, что для меня в итоге важнее всего'},
+      {vice:'healthy', text:'Подумаю, что лично я мог бы сделать иначе, чтобы помочь общему результату в следующий раз'},
+    ]
+  },
+  {
+    id: 'q8',
+    text: 'На мозговом штурме твою идею раскритиковали при всех. Что вероятнее сделаешь дальше?',
+    options: [
+      {vice:'trust', text:'Постараюсь больше не предлагать сырые идеи — только те, в которых уверен на все сто'},
+      {vice:'conflict', text:'Закроюсь и просто перестану активно участвовать в обсуждении'},
+      {vice:'commitment', text:'Формально соглашусь с общим направлением, но перестану вкладываться в него по-настоящему'},
+      {vice:'accountability', text:'Запомню, кто критиковал, и постараюсь не оказаться в ситуации, где придётся отвечать за это направление'},
+      {vice:'results', text:'Сконцентрируюсь на своих задачах, где мой вклад точно оценят'},
+      {vice:'healthy', text:'Спрошу, что именно не устроило, и предложу доработанный вариант'},
+    ]
+  },
+  {
+    id: 'q9',
+    text: 'Нужно принять непопулярное, но необходимое решение и донести его до команды. Что вероятнее сделаешь?',
+    options: [
+      {vice:'trust', text:'Постараюсь не быть тем, кто это озвучивает — вдруг решение окажется неверным'},
+      {vice:'conflict', text:'Передам решение максимально мягко, даже если это немного исказит суть'},
+      {vice:'commitment', text:'Озвучу, но дам понять, что лично не особо разделяю это решение'},
+      {vice:'accountability', text:'Скажу, что это решение «сверху» — вопросы пусть будут не ко мне'},
+      {vice:'results', text:'Сделаю то, что нужно для галочки, но не буду вкладываться, чтобы решение реально прижилось'},
+      {vice:'healthy', text:'Открыто объясню команде логику решения, даже если оно непопулярное'},
+    ]
+  },
+  {
+    id: 'q10',
+    text: 'Коллега из другой команды не выполнил договорённость, от которой зависит твоя часть работы. Реакция?',
+    options: [
+      {vice:'trust', text:'Ничего не скажу напрямую — не хочу показаться зависимым от чужой части'},
+      {vice:'conflict', text:'Напишу нейтральное сообщение и не буду настаивать на прямом разговоре'},
+      {vice:'commitment', text:'Подожду ещё — может, само решится, раз договорённость и так была неточной'},
+      {vice:'accountability', text:'Пожалуюсь его руководителю, а не поговорю с ним лично'},
+      {vice:'results', text:'Подстроюсь и сделаю свою часть так, чтобы не зависеть от него — а как выйдет у него, не моя забота'},
+      {vice:'healthy', text:'Поговорю с ним напрямую, объясню, как это влияет на мою часть, и договорюсь о новых сроках'},
+    ]
+  },
+  {
+    id: 'q11',
+    text: 'На итоговой встрече по проекту всех просят честно оценить, что можно было сделать лучше. Что вероятнее скажешь?',
+    options: [
+      {vice:'trust', text:'Скажу что-то общее и безопасное — не хочу называть свои промахи вслух'},
+      {vice:'conflict', text:'Отмечу только позитивное — не время поднимать неудобные темы'},
+      {vice:'commitment', text:'Соглашусь с тем, что скажут другие, даже если у меня было другое мнение по ходу проекта'},
+      {vice:'accountability', text:'Отмечу чужие промахи, но не свою роль в общем результате'},
+      {vice:'results', text:'Оценю в первую очередь, как это скажется на моей репутации в следующем проекте'},
+      {vice:'healthy', text:'Честно назову, что могу улучшить в своей работе, а не только чужие моменты'},
+    ]
+  },
+  {
+    id: 'q12',
+    text: 'Появилась возможность взять более заметный личный проект вместо помощи команде на финальном рывке. Что вероятнее сделаешь?',
+    options: [
+      {vice:'trust', text:'Возьмусь за новый проект в одиночку, не обсуждая это с командой заранее'},
+      {vice:'conflict', text:'Соглашусь на новый проект, но не буду прямо говорить команде, что отхожу от общего рывка'},
+      {vice:'commitment', text:'Скажу, что помогу, но по факту буду постепенно переключаться на новое'},
+      {vice:'accountability', text:'Возьму новый проект и решу, что за финальный рывок теперь отвечают другие'},
+      {vice:'results', text:'Выберу то, что заметнее лично для меня, даже если это ослабит команду'},
+      {vice:'healthy', text:'Обсужу это открыто с командой — вместе взвесим, что сейчас важнее'},
+    ]
+  },
+];
+
+// Перемешиваем варианты ответов один раз при загрузке страницы,
+// чтобы порядок не выдавал, какой вариант к какому пороку относится.
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+QUESTIONS.forEach(q => { q.options = shuffle(q.options); });
+
+const INTERPRETATIONS = {
+  trust: {
+    low: 'В рабочих ситуациях ты обычно легко признаёшь неуверенность и просишь о помощи. В игре это сильная сторона — можешь первым показать уязвимость и задать тон остальным.',
+    mid: 'Иногда тебе проще держать лицо, чем показать слабое место. В игре последи, не разыгрываешь ли ты роль «у меня всё под контролем», даже когда честнее было бы сказать иначе.',
+    high: 'Ты чаще других склонен скрывать сомнения и не показывать неуверенность коллегам. В игре обрати внимание на моменты, когда хочется промолчать, — попробуй сказать вслух.'
+  },
+  conflict: {
+    low: 'Ты обычно спокойно вступаешь в спор по сути дела. В игре можешь стать тем, кто честно называет разногласие, вместо того чтобы его сглаживать.',
+    mid: 'Ты не всегда решаешься открыто поспорить, особенно если атмосфера напряжённая. В игре последи, не соглашаешься ли ты просто для того, чтобы не спорить.',
+    high: 'Тебе особенно свойственно уходить от открытого конфликта. В игре обрати внимание, не переносишь ли ты разногласия в кулуары вместо того, чтобы озвучить их сразу.'
+  },
+  commitment: {
+    low: 'Ты обычно искренне поддерживаешь принятые решения, даже если был не до конца согласен. В игре можешь помогать команде чётко фиксировать договорённости.',
+    mid: 'Иногда ты соглашаешься формально, не до конца разделяя решение. В игре последи, не киваешь ли ты «для вида», планируя всё равно сделать по-своему.',
+    high: 'Тебе особенно свойственно не до конца принимать решения команды. В игре обрати внимание на моменты «да, но…» — и что мешает сказать это прямо во время обсуждения.'
+  },
+  accountability: {
+    low: 'Тебе обычно несложно сказать коллеге напрямую, если что-то пошло не так. В игре можешь стать тем, кто называет то, что другие замечают, но не проговаривают.',
+    mid: 'Иногда тебе проще промолчать о чужой ошибке, чем дать обратную связь напрямую. В игре последи, не перекладываешь ли ты эту задачу на кого-то «более подходящего».',
+    high: 'Тебе особенно сложно давать прямую обратную связь и предъявлять требования коллегам. В игре обрати внимание на моменты, когда легче смолчать или сделать за другого, чем сказать прямо.'
+  },
+  results: {
+    low: 'Общий результат команды для тебя обычно важнее личных очков. В игре можешь напоминать другим о совместной цели, когда фокус начинает смещаться.',
+    mid: 'Иногда личный интерес или репутация всё же перевешивают общую цель. В игре последи, не отвлекаешься ли ты от результата команды в пользу своего собственного вклада.',
+    high: 'Тебе особенно свойственно ставить личные интересы выше общего результата. В игре обрати внимание на моменты, когда легче «выиграть свою битву», чем помочь выиграть команде.'
+  }
+};
+
+const ANTIDOTES = {
+  trust: '«Если честно, я не уверен на этот счёт — можете помочь?»',
+  conflict: '«У меня другое мнение, и вот почему…»',
+  commitment: '«Правильно понимаю: мы договорились, что…?»',
+  accountability: '«Смотри, вот тут не сходится — давай вместе поправим»',
+  results: '«А что сейчас важнее для общего результата?»'
+};
+
+function buildConclusion(scores, healthyCount, total){
+  const max = Math.max(...VICE_ORDER.map(v=>scores[v]));
+  if (max === 0){
+    return {
+      title: '—',
+      body: 'По твоим ответам ни один порок не проявился явно сильнее остальных — сегодня, скорее всего, стоит просто наблюдать за собой в игре без заранее заданного фокуса.',
+      antidote: null
+    };
+  }
+  const top = VICE_ORDER.filter(v=>scores[v]===max);
+  const title = top.map(v=>VICE_LABEL[v]).join(' и ');
+
+  let body = '';
+  if (top.length === 1){
+    body = `Судя по ответам, сегодня у тебя сильнее всего проявляется «${VICE_LABEL[top[0]]}» (${scores[top[0]]} из ${total} ситуаций). ${INTERPRETATIONS[top[0]].high}`;
+  } else {
+    const parts = top.map(v => `«${VICE_LABEL[v]}»`).join(' и ');
+    body = `Судя по ответам, у тебя примерно поровну проявляются ${parts} (по ${max} из ${total} ситуаций) — сегодня стоит присмотреться сразу к обоим. ${top.map(v=>INTERPRETATIONS[v].high).join(' ')}`;
+  }
+
+  if (healthyCount >= 7){
+    body += ` При этом больше чем в половине ситуаций ты выбирал(а) прямую, открытую реакцию — в игре стоит просто аккуратно её удерживать, особенно в моменты, где это будет непросто.`;
+  } else if (healthyCount <= 2){
+    body += ` Почти во всех ситуациях выбор шёл в сторону избегания, а не прямого разговора — сегодня, вероятно, будет из чего поработать в игре.`;
+  }
+
+  const antidote = top.length === 1 ? ANTIDOTES[top[0]] : null;
+  return { title, body, antidote };
+}
+
+function levelOf(count){
+  if (count <= 1) return 'low';
+  if (count === 2) return 'mid';
+  return 'high';
+}
+const LEVEL_LABEL = { low:'Слабо выражено сегодня', mid:'На среднем уровне', high:'Заметно выражено' };
+const LEVEL_COLOR = { low:'var(--low)', mid:'var(--mid)', high:'var(--high)' };
+const LEVEL_TAG = { low:'tag-low', mid:'tag-mid', high:'tag-high' };
+
+/* ============ STATE ============ */
+let state = {
+  screen: 'intro',
+  name: '', company: '',
+  qIndex: 0,
+  answers: {}, // questionId -> vice
+};
+
+const app = document.getElementById('app');
+
+/* ============ RENDER ============ */
+function render(){
+  if (state.screen === 'intro') return renderIntro();
+  if (state.screen === 'quiz') return renderQuiz();
+  if (state.screen === 'results') return renderResults();
+}
+
+function renderIntro(){
+  app.innerHTML = `
+    <div class="eyebrow">Перед игрой</div>
+    <h1 style="font-size:30px;margin:0 0 4px;">Тест на выраженность пороков команды</h1>
+    <p class="lede">12 рабочих ситуаций, 5 минут. Выбирай реакцию, которая ближе всего к тому, как ты обычно поступаешь — без «правильных» ответов. По итогу увидишь, к какому из пяти пороков команды (по книге Патрика Ленсиони) ты сегодня ближе всего, — чтобы обратить на это внимание в игре.</p>
+    <div class="pyramid">
+      ${VICE_ORDER.map((v,i)=>`<div class="pyr-layer pyr-w-${5-i}"><span>${VICE_LABEL[v]}</span></div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:28px;">
+      <label for="f-name">Имя</label>
+      <input type="text" id="f-name" placeholder="Как к тебе обращаться" value="${state.name}">
+      <label for="f-company">Компания</label>
+      <input type="text" id="f-company" placeholder="Название компании" value="${state.company}">
+      <button class="btn-primary" id="start-btn">Начать тест</button>
+    </div>
+  `;
+  document.getElementById('f-name').oninput = e=> state.name = e.target.value;
+  document.getElementById('f-company').oninput = e=> state.company = e.target.value;
+  document.getElementById('start-btn').onclick = ()=>{
+    if(!state.name.trim() || !state.company.trim()){
+      alert('Пожалуйста, укажи имя и компанию.');
+      return;
+    }
+    state.screen='quiz'; state.qIndex=0; render();
+  };
+}
+
+function renderQuiz(){
+  const q = QUESTIONS[state.qIndex];
+  const total = QUESTIONS.length;
+  const pct = Math.round((state.qIndex)/total*100);
+  const selectedVice = state.answers[q.id];
+
+  const bodyHtml = q.options.map(o=>`
+    <div class="choice-opt ${selectedVice===o.vice?'selected':''}" data-vice="${o.vice}">${o.text}</div>
+  `).join('');
+
+  app.innerHTML = `
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="q-meta">Ситуация ${state.qIndex+1} из ${total}</div>
+    <div class="q-text">${q.text}</div>
+    <div id="opts">${bodyHtml}</div>
+    <div class="nav-row">
+      ${state.qIndex>0 ? `<button class="btn-secondary" id="back-btn">Назад</button>` : ''}
+      <button class="btn-primary" id="next-btn" ${selectedVice===undefined?'disabled':''} style="flex:1;">
+        ${state.qIndex===total-1 ? 'Показать результат' : 'Далее'}
+      </button>
+    </div>
+  `;
+
+  document.querySelectorAll('#opts [data-vice]').forEach(el=>{
+    el.onclick = ()=>{
+      state.answers[q.id] = el.dataset.vice;
+      render();
+    };
+  });
+  const nextBtn = document.getElementById('next-btn');
+  if(nextBtn){
+    nextBtn.onclick = ()=>{
+      if(state.qIndex === total-1){
+        state.screen='results'; render(); submitResults();
+      } else {
+        state.qIndex++; render();
+      }
+    };
+  }
+  const backBtn = document.getElementById('back-btn');
+  if(backBtn){ backBtn.onclick = ()=>{ state.qIndex--; render(); }; }
+}
+
+function computeScores(){
+  const scores = {};
+  VICE_ORDER.forEach(v=>scores[v]=0);
+  Object.values(state.answers).forEach(vice=>{ scores[vice] = (scores[vice]||0) + 1; });
+  return scores;
+}
+
+function renderResults(){
+  const scores = computeScores();
+  const total = QUESTIONS.length;
+  const healthyCount = scores.healthy || 0;
+  const conclusion = buildConclusion(scores, healthyCount, total);
+
+  app.innerHTML = `
+    <div class="eyebrow">Результат теста</div>
+    <h1 style="font-size:28px;margin:0 0 18px;">${state.name}, вот твоё заключение</h1>
+
+    <div class="pyramid" style="margin-bottom:14px;">
+      ${VICE_ORDER.map((v,i)=>{
+        const lvl = levelOf(scores[v]);
+        return `<div class="pyr-layer pyr-w-${5-i} active" style="background:${LEVEL_COLOR[lvl]}"><span>${VICE_LABEL[v]}</span></div>`;
+      }).join('')}
+    </div>
+    <p class="status-note" style="margin-bottom:26px;">В ${healthyCount} из ${total} ситуаций ты выбрал(а) прямую, конструктивную реакцию — она не привязана ни к одному пороку и в карту выше не входит.</p>
+
+    <div class="top-banner">
+      <div class="eyebrow">Твоё заключение перед игрой</div>
+      <h2>${conclusion.title}</h2>
+      <p>${conclusion.body}</p>
+      ${conclusion.antidote ? `<p style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15);"><strong>Фраза, которую стоит попробовать в игре:</strong><br>${conclusion.antidote}</p>` : ''}
+    </div>
+
+    <div class="eyebrow" style="margin:8px 0 14px;">Разбивка по каждому пороку</div>
+    ${VICE_ORDER.map(v=>{
+      const lvl = levelOf(scores[v]);
+      const pct = Math.round(scores[v]/total*100);
+      return `
+      <div class="vice-result">
+        <div class="vice-head">
+          <div class="vice-name">${VICE_LABEL[v]}</div>
+          <div class="vice-tag ${LEVEL_TAG[lvl]}">${LEVEL_LABEL[lvl]}</div>
+        </div>
+        <div class="vice-bar-track"><div class="vice-bar-fill" style="width:${pct}%; background:${LEVEL_COLOR[lvl]}"></div></div>
+        <div class="vice-count">${scores[v]} из ${total} ситуаций</div>
+        <div class="vice-text">${INTERPRETATIONS[v][lvl]}</div>
+      </div>`;
+    }).join('')}
+
+    <div class="status-note" id="save-status">Сохраняем результат…</div>
+  `;
+}
+
+/* ============ SUBMIT TO GOOGLE SHEET ============ */
+async function submitResults(){
+  const scores = computeScores();
+  const total = QUESTIONS.length;
+  const healthyCount = scores.healthy || 0;
+  const conclusion = buildConclusion(scores, healthyCount, total);
+
+  const payload = {
+    name: state.name,
+    company: state.company,
+    trust: scores.trust,
+    conflict: scores.conflict,
+    commitment: scores.commitment,
+    accountability: scores.accountability,
+    results: scores.results,
+    healthy: healthyCount,
+    topVices: conclusion.title,
+    conclusion: conclusion.body + (conclusion.antidote ? ` Фраза-антидот: ${conclusion.antidote}` : '')
+  };
+
+  const statusEl = ()=>document.getElementById('save-status');
+
+  if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.indexOf('ВСТАВЬТЕ') !== -1){
+    if(statusEl()){ statusEl().textContent = 'Google Таблица не подключена (заполните GOOGLE_SCRIPT_URL в коде файла) — результат показан только на экране.'; statusEl().className='status-note err'; }
+    return;
+  }
+
+  try{
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify(payload)
+    });
+    if(statusEl()){ statusEl().textContent = 'Результат сохранён.'; statusEl().className='status-note ok'; }
+  }catch(err){
+    if(statusEl()){ statusEl().textContent = 'Не удалось сохранить результат в таблицу. Сделайте скриншот экрана на всякий случай.'; statusEl().className='status-note err'; }
+  }
+}
+
+render();
+</script>
+</body>
+</html>
